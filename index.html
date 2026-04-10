@@ -2,144 +2,291 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hands-Only VR Shooter</title>
+<title>VR Battle Royale EXTREME</title>
 <style>
-  body { margin: 0; overflow: hidden; }
-  #info { position: absolute; top: 10px; left: 10px; color: white; font-family: sans-serif; }
+body { margin:0; overflow:hidden; }
+#hud {
+  position:absolute;
+  top:10px;
+  left:10px;
+  color:white;
+  font-family:sans-serif;
+}
 </style>
 </head>
 <body>
-<div id="info">Hands-Only VR Shooter</div>
+<div id="hud"></div>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/webxr/VRButton.js';
 
-let scene, camera, renderer;
-let playerRig;
-let controllerR, controllerL;
-let bullets = [];
+let scene,camera,renderer,rig;
+let controllerR,controllerL;
+let bullets=[],bots=[],buildings=[],players={};
+const keys={};
+
+// 🔫 Fortnite guns
+const GUNS={
+ AR:{dmg:12,rate:120,spread:0.02},
+ SMG:{dmg:8,rate:60,spread:0.05},
+ SHOTGUN:{dmg:40,rate:700,spread:0.2},
+ SNIPER:{dmg:90,rate:1200,spread:0.005}
+};
+
+let currentGun="AR";
+
+// 🌐 fake multiplayer id
+const playerId=Math.random().toString(36).slice(2);
 
 init();
 animate();
 
 function init(){
-    // --- Scene & Camera ---
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x202025);
 
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene=new THREE.Scene();
+scene.background=new THREE.Color(0x1e2b3a);
 
-    // --- Renderer ---
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.xr.enabled = true;
-    document.body.appendChild(renderer.domElement);
-    document.body.appendChild(VRButton.createButton(renderer));
+camera=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,0.1,1000);
 
-    // --- Lighting ---
-    const light = new THREE.HemisphereLight(0xffffff, 0x444444);
-    light.position.set(0, 20, 0);
-    scene.add(light);
+renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.xr.enabled=true;
+document.body.appendChild(renderer.domElement);
+document.body.appendChild(VRButton.createButton(renderer));
 
-    // --- Ground ---
-    const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(20, 20),
-        new THREE.MeshStandardMaterial({ color: 0x444444 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    scene.add(ground);
+scene.add(new THREE.HemisphereLight(0xffffff,0x444444,1));
 
-    // --- Player rig ---
-    playerRig = new THREE.Group();
-    camera.position.set(0, 1.6, 0);
-    playerRig.add(camera);
-    scene.add(playerRig);
+// ground
+const ground=new THREE.Mesh(
+ new THREE.PlaneGeometry(200,200),
+ new THREE.MeshStandardMaterial({color:0x2f5f2f})
+);
+ground.rotation.x=-Math.PI/2;
+scene.add(ground);
 
-    // --- Controllers / Hands ---
-    controllerR = renderer.xr.getController(0);
-    controllerL = renderer.xr.getController(1);
-    scene.add(controllerR, controllerL);
+// player rig
+rig=new THREE.Group();
+camera.position.set(0,1.6,0);
+rig.add(camera);
+scene.add(rig);
 
-    function createHand(color) {
-        const hand = new THREE.Mesh(
-            new THREE.SphereGeometry(0.05, 16, 16),
-            new THREE.MeshStandardMaterial({ color })
-        );
-        return hand;
-    }
-    controllerR.add(createHand(0x00e5ff));
-    controllerL.add(createHand(0xff4081));
+// controllers
+controllerR=renderer.xr.getController(0);
+controllerL=renderer.xr.getController(1);
+scene.add(controllerR,controllerL);
 
-    // --- Gun for right hand ---
-    const gun = new THREE.Group();
-    const body = new THREE.Mesh(
-        new THREE.BoxGeometry(0.05, 0.08, 0.3),
-        new THREE.MeshStandardMaterial({ color: 0x333333 })
-    );
-    body.position.z = -0.15;
-    const barrel = new THREE.Mesh(
-        new THREE.BoxGeometry(0.03, 0.03, 0.25),
-        new THREE.MeshStandardMaterial({ color: 0x555555 })
-    );
-    barrel.position.z = -0.35;
-    gun.add(body, barrel);
-    controllerR.add(gun);
+// hands
+controllerR.add(hand(0x00e5ff));
+controllerL.add(hand(0xff4081));
 
-    // --- Shooting logic ---
-    const player = { ammo: 30, lastShot: 0, rate: 200, reloading: false };
+// gun mesh
+const gun=new THREE.Mesh(
+ new THREE.BoxGeometry(0.05,0.05,0.3),
+ new THREE.MeshStandardMaterial({color:0x222})
+);
+gun.position.z=-0.2;
+controllerR.add(gun);
 
-    controllerR.addEventListener('selectstart', () => {
-        const now = performance.now();
-        if (now - player.lastShot < player.rate) return;
-        if (player.ammo <= 0) {
-            player.reloading = true;
-            setTimeout(() => { player.ammo = 30; player.reloading = false; }, 1000);
-            return;
-        }
-        player.lastShot = now;
-        player.ammo--;
-        shoot(controllerR);
-    });
+// shooting
+controllerR.addEventListener('selectstart',shoot);
 
-    window.addEventListener('resize', onWindowResize);
+// building
+controllerL.addEventListener('selectstart',buildWall);
+
+// bots
+for(let i=0;i<8;i++) spawnBot();
+
+// multiplayer placeholder
+players[playerId]=rig.position;
+
+document.addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);
+document.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+
+window.addEventListener('resize',onResize);
 }
 
-function shoot(controller) {
-    const origin = controller.getWorldPosition(new THREE.Vector3());
-    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(controller.quaternion);
-
-    const bullet = new THREE.Mesh(
-        new THREE.SphereGeometry(0.02, 8, 8),
-        new THREE.MeshStandardMaterial({ color: 0xff0000 })
-    );
-    bullet.position.copy(origin);
-    bullet.userData = { velocity: dir.multiplyScalar(0.5) };
-    scene.add(bullet);
-    bullets.push(bullet);
+// ✋ hand
+function hand(c){
+return new THREE.Mesh(
+ new THREE.SphereGeometry(0.05,16,16),
+ new THREE.MeshStandardMaterial({color:c})
+);
 }
 
-function animate() {
-    renderer.setAnimationLoop(render);
+// 🔫 guns
+function shoot(){
+const gunData=GUNS[currentGun];
+
+const origin=controllerR.getWorldPosition(new THREE.Vector3());
+const dir=new THREE.Vector3(0,0,-1).applyQuaternion(controllerR.quaternion);
+
+// spread
+dir.x+=(Math.random()-0.5)*gunData.spread;
+dir.y+=(Math.random()-0.5)*gunData.spread;
+
+const b=new THREE.Mesh(
+ new THREE.SphereGeometry(0.02),
+ new THREE.MeshBasicMaterial({color:0xff0000})
+);
+
+b.position.copy(origin);
+b.userData={
+ vel:dir.multiplyScalar(1),
+ dmg:gunData.dmg,
+ owner:playerId
+};
+
+scene.add(b);
+bullets.push(b);
 }
 
-function render() {
-    // Update bullets
-    bullets.forEach((b, i) => {
-        b.position.add(b.userData.velocity);
-        if (b.position.length() > 50) {
-            scene.remove(b);
-            bullets.splice(i, 1);
-        }
-    });
+// 🧱 building system
+function buildWall(){
+const wall=new THREE.Mesh(
+ new THREE.BoxGeometry(2,2,0.2),
+ new THREE.MeshStandardMaterial({color:0x8888ff})
+);
 
-    renderer.render(scene, camera);
+const pos=rig.position.clone();
+pos.z-=3;
+
+wall.position.copy(pos);
+scene.add(wall);
+buildings.push(wall);
 }
 
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+// 🤖 smarter bots
+function spawnBot(){
+const bot={
+ mesh:new THREE.Mesh(
+  new THREE.BoxGeometry(0.5,1.5,0.5),
+  new THREE.MeshStandardMaterial({color:0xff5555})
+ ),
+ hp:100,
+ state:"chase"
+};
+
+bot.mesh.position.set(rand(),0.75,rand());
+scene.add(bot.mesh);
+bots.push(bot);
+}
+
+// 🧠 bot AI
+function updateBots(){
+bots.forEach(b=>{
+if(b.hp<=0) return;
+
+const dist=b.mesh.position.distanceTo(rig.position);
+
+// smarter logic
+if(b.hp<30) b.state="retreat";
+else if(dist<10) b.state="attack";
+else b.state="chase";
+
+let dir;
+
+if(b.state==="retreat"){
+ dir=b.mesh.position.clone().sub(rig.position).normalize();
+}
+else {
+ dir=rig.position.clone().sub(b.mesh.position).normalize();
+}
+
+b.mesh.position.add(dir.multiplyScalar(0.03));
+
+// shoot
+if(dist<15 && Math.random()<0.02){
+ shootBot(b);
+}
+});
+}
+
+// bot shooting
+function shootBot(b){
+const dir=rig.position.clone().sub(b.mesh.position).normalize();
+
+const bullet=new THREE.Mesh(
+ new THREE.SphereGeometry(0.02),
+ new THREE.MeshBasicMaterial({color:0xffff00})
+);
+
+bullet.position.copy(b.mesh.position);
+bullet.userData={vel:dir.multiplyScalar(0.6),enemy:true};
+
+scene.add(bullet);
+bullets.push(bullet);
+}
+
+// 💥 bullets
+function updateBullets(){
+bullets.forEach((b,i)=>{
+b.position.add(b.userData.vel);
+
+// hit player
+if(b.userData.enemy){
+ if(b.position.distanceTo(rig.position)<1){
+  // damage system
+ }
+}
+
+// hit bots
+bots.forEach(bot=>{
+ if(b.position.distanceTo(bot.mesh.position)<0.5){
+  bot.hp-=b.userData.dmg;
+  if(bot.hp<=0) scene.remove(bot.mesh);
+ }
+});
+
+if(b.position.length()>200){
+ scene.remove(b);
+ bullets.splice(i,1);
+}
+});
+}
+
+// 🕹️ movement
+function move(){
+let x=0,z=0;
+
+if(keys['w']||keys['arrowup'])z-=1;
+if(keys['s']||keys['arrowdown'])z+=1;
+if(keys['a']||keys['arrowleft'])x-=1;
+if(keys['d']||keys['arrowright'])x+=1;
+
+const dir=new THREE.Vector3(x,0,z);
+dir.applyQuaternion(camera.quaternion);
+dir.y=0;
+dir.normalize();
+
+rig.position.addScaledVector(dir,0.08);
+}
+
+// 🌐 fake multiplayer sync
+function sync(){
+players[playerId]=rig.position;
+// (real version would send to server here)
+}
+
+// loop
+function animate(){
+renderer.setAnimationLoop(update);
+}
+
+function update(){
+move();
+updateBots();
+updateBullets();
+sync();
+renderer.render(scene,camera);
+}
+
+// utils
+function rand(){return (Math.random()-0.5)*120;}
+function onResize(){
+camera.aspect=innerWidth/innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth,innerHeight);
 }
 </script>
 </body>
