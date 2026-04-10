@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hands-Only VR Shooter</title>
+<style>
+  body { margin: 0; overflow: hidden; }
+  #info { position: absolute; top: 10px; left: 10px; color: white; font-family: sans-serif; }
+</style>
+</head>
+<body>
+<div id="info">Hands-Only VR Shooter</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/webxr/VRButton.js';
+
+let scene, camera, renderer;
+let playerRig;
+let controllerR, controllerL;
+let bullets = [];
+
+init();
+animate();
+
+function init(){
+    // --- Scene & Camera ---
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x202025);
+
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    // --- Renderer ---
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.body.appendChild(renderer.domElement);
+    document.body.appendChild(VRButton.createButton(renderer));
+
+    // --- Lighting ---
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+    light.position.set(0, 20, 0);
+    scene.add(light);
+
+    // --- Ground ---
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.MeshStandardMaterial({ color: 0x444444 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    // --- Player rig ---
+    playerRig = new THREE.Group();
+    camera.position.set(0, 1.6, 0);
+    playerRig.add(camera);
+    scene.add(playerRig);
+
+    // --- Controllers / Hands ---
+    controllerR = renderer.xr.getController(0);
+    controllerL = renderer.xr.getController(1);
+    scene.add(controllerR, controllerL);
+
+    function createHand(color) {
+        const hand = new THREE.Mesh(
+            new THREE.SphereGeometry(0.05, 16, 16),
+            new THREE.MeshStandardMaterial({ color })
+        );
+        return hand;
+    }
+    controllerR.add(createHand(0x00e5ff));
+    controllerL.add(createHand(0xff4081));
+
+    // --- Gun for right hand ---
+    const gun = new THREE.Group();
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.05, 0.08, 0.3),
+        new THREE.MeshStandardMaterial({ color: 0x333333 })
+    );
+    body.position.z = -0.15;
+    const barrel = new THREE.Mesh(
+        new THREE.BoxGeometry(0.03, 0.03, 0.25),
+        new THREE.MeshStandardMaterial({ color: 0x555555 })
+    );
+    barrel.position.z = -0.35;
+    gun.add(body, barrel);
+    controllerR.add(gun);
+
+    // --- Shooting logic ---
+    const player = { ammo: 30, lastShot: 0, rate: 200, reloading: false };
+
+    controllerR.addEventListener('selectstart', () => {
+        const now = performance.now();
+        if (now - player.lastShot < player.rate) return;
+        if (player.ammo <= 0) {
+            player.reloading = true;
+            setTimeout(() => { player.ammo = 30; player.reloading = false; }, 1000);
+            return;
+        }
+        player.lastShot = now;
+        player.ammo--;
+        shoot(controllerR);
+    });
+
+    window.addEventListener('resize', onWindowResize);
+}
+
+function shoot(controller) {
+    const origin = controller.getWorldPosition(new THREE.Vector3());
+    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(controller.quaternion);
+
+    const bullet = new THREE.Mesh(
+        new THREE.SphereGeometry(0.02, 8, 8),
+        new THREE.MeshStandardMaterial({ color: 0xff0000 })
+    );
+    bullet.position.copy(origin);
+    bullet.userData = { velocity: dir.multiplyScalar(0.5) };
+    scene.add(bullet);
+    bullets.push(bullet);
+}
+
+function animate() {
+    renderer.setAnimationLoop(render);
+}
+
+function render() {
+    // Update bullets
+    bullets.forEach((b, i) => {
+        b.position.add(b.userData.velocity);
+        if (b.position.length() > 50) {
+            scene.remove(b);
+            bullets.splice(i, 1);
+        }
+    });
+
+    renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+</script>
+</body>
+</html>
