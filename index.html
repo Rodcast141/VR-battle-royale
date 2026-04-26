@@ -252,6 +252,8 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 
 #vrBtn{position:fixed;bottom:18px;right:18px;z-index:9999;font-size:12px;font-weight:700;letter-spacing:3px;padding:9px 18px;border:1px solid #aa44ff;color:#aa44ff;background:rgba(0,0,0,.7);cursor:pointer;display:none;border-radius:3px;text-transform:uppercase;font-family:'Lato',sans-serif}
 #vrBtn:hover{background:#aa44ff;color:#000}
+#xboxHUD{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;font-size:10px;font-weight:700;letter-spacing:2px;padding:6px 16px;border:1px solid #107c10;color:#107c10;background:rgba(0,0,0,.75);border-radius:3px;text-transform:uppercase;display:none;pointer-events:none}
+#xboxConnected{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0d2a0d,#071407);border:2px solid #107c10;padding:10px 24px;border-radius:6px;font-size:12px;font-weight:700;color:#fff;z-index:9999;letter-spacing:1px;opacity:0;transition:opacity .3s;pointer-events:none}
 #lh{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:2px;pointer-events:none;z-index:9999}
 </style>
 </head>
@@ -506,6 +508,8 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 </div>
 
 <div id="toast"></div>
+<div id="xboxHUD">🎮 XBOX CONTROLLER ACTIVE</div>
+<div id="xboxConnected"></div>
 <button id="vrBtn">ENTER VR</button>
 <div id="lh">DRAG to look · CLICK to capture mouse · ESC to release</div>
 
@@ -1597,6 +1601,456 @@ function updateVRInput(){
   camPivot.position.set(player.pos.x,player.pos.y,player.pos.z);
   camPivot.rotation.y=player.yaw;
 }
+
+// ══════════════════════════════════════════════════
+//  XBOX CONTROLLER SUPPORT (Gamepad API)
+//  Works with: Xbox One, Series X/S, any XInput pad
+//  Connect via USB or Bluetooth before loading page
+// ══════════════════════════════════════════════════
+
+var xboxState = {
+  connected: false,
+  padIndex: -1,
+  prevButtons: [],
+  leftTriggerHeld: false,
+  rightTriggerHeld: false,
+  aHeld: false,
+  bHeld: false,
+  xHeld: false,
+  yHeld: false,
+  lbHeld: false,
+  rbHeld: false,
+  dpadUpHeld: false,
+  dpadDownHeld: false,
+  dpadLeftHeld: false,
+  dpadRightHeld: false,
+  startHeld: false,
+  snapCd: 0,
+  shootCd: 0,
+};
+
+// Xbox button indices (standard mapping)
+var XBOX = {
+  A:0, B:1, X:2, Y:3,
+  LB:4, RB:5,
+  LT:6, RT:7,        // These are axes[2] and axes[5] on some browsers, buttons on others
+  BACK:8, START:9,
+  LS:10, RS:11,       // Stick clicks
+  DPAD_UP:12, DPAD_DOWN:13, DPAD_LEFT:14, DPAD_RIGHT:15,
+  GUIDE:16,
+  // Axes
+  LS_X:0, LS_Y:1,    // Left stick
+  RS_X:2, RS_Y:3,    // Right stick
+};
+
+// Dead zone for sticks
+var DEAD_ZONE = 0.18;
+
+function applyDeadZone(val) {
+  return Math.abs(val) < DEAD_ZONE ? 0 : val;
+}
+
+function xboxBtnPressed(gp, idx) {
+  var btn = gp.buttons[idx];
+  if (!btn) return false;
+  return btn.pressed || btn.value > 0.5;
+}
+
+function xboxBtnJustPressed(gp, idx) {
+  return xboxBtnPressed(gp, idx) && !xboxState.prevButtons[idx];
+}
+
+function xboxTriggerVal(gp, idx) {
+  // Triggers can be buttons[6/7] or axes[2/5] depending on browser/OS
+  var btn = gp.buttons[idx];
+  if (btn) return btn.value;
+  return 0;
+}
+
+// Connect/disconnect events
+window.addEventListener('gamepadconnected', function(e) {
+  var gp = e.gamepad;
+  // Accept Xbox, XInput, and standard gamepads
+  if (gp.mapping === 'standard' || gp.id.toLowerCase().indexOf('xbox') !== -1 ||
+      gp.id.toLowerCase().indexOf('xinput') !== -1 || gp.id.toLowerCase().indexOf('045e') !== -1) {
+    xboxState.connected = true;
+    xboxState.padIndex = gp.index;
+    showXboxConnected('🎮 Xbox Controller Connected! ' + gp.id.split('(')[0]);
+    document.getElementById('xboxHUD').style.display = 'block';
+    console.log('Xbox controller connected:', gp.id);
+  } else {
+    // Accept any standard gamepad as fallback
+    xboxState.connected = true;
+    xboxState.padIndex = gp.index;
+    showXboxConnected('🎮 Controller Connected: ' + gp.id.split('(')[0].substring(0,30));
+    document.getElementById('xboxHUD').style.display = 'block';
+  }
+});
+
+window.addEventListener('gamepaddisconnected', function(e) {
+  if (e.gamepad.index === xboxState.padIndex) {
+    xboxState.connected = false;
+    xboxState.padIndex = -1;
+    document.getElementById('xboxHUD').style.display = 'none';
+    showXboxConnected('🎮 Controller Disconnected');
+  }
+});
+
+function showXboxConnected(msg) {
+  var el = document.getElementById('xboxConnected');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  setTimeout(function(){ el.style.opacity='0'; }, 3000);
+}
+
+// Poll gamepads every frame (required — Gamepad API is poll-based)
+function pollXboxController(dt) {
+  if (!xboxState.connected) {
+    // Also check for newly connected pads
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (var i = 0; i < pads.length; i++) {
+      if (pads[i] && pads[i].connected) {
+        xboxState.connected = true;
+        xboxState.padIndex = pads[i].index;
+        document.getElementById('xboxHUD').style.display = 'block';
+        showXboxConnected('🎮 Controller Found: ' + pads[i].id.split('(')[0].substring(0,30));
+        break;
+      }
+    }
+    return;
+  }
+
+  var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  var gp = pads[xboxState.padIndex];
+  if (!gp || !gp.connected) {
+    xboxState.connected = false;
+    document.getElementById('xboxHUD').style.display = 'none';
+    return;
+  }
+
+  // ── LOBBY / MENU CONTROLS ──
+  if (currentScreen !== 'game') {
+    handleXboxMenu(gp, dt);
+    // Save previous button state
+    xboxState.prevButtons = gp.buttons.map(function(b){ return b.pressed||b.value>0.5; });
+    return;
+  }
+
+  // ── IN-GAME CONTROLS ──
+  if (!gameRunning) return;
+  handleXboxGame(gp, dt);
+  xboxState.prevButtons = gp.buttons.map(function(b){ return b.pressed||b.value>0.5; });
+}
+
+// ── MENU NAVIGATION ──
+function handleXboxMenu(gp, dt) {
+  // A button = confirm/click
+  if (xboxBtnJustPressed(gp, XBOX.A)) {
+    // Simulate clicking whatever's focused or the play button
+    var playBtn = document.getElementById('playBtn');
+    if (playBtn && currentScreen === 'lobby') playBtn.click();
+  }
+  // B button = back
+  if (xboxBtnJustPressed(gp, XBOX.B)) {
+    if (currentScreen !== 'lobby') showScreen('lobby');
+  }
+  // D-pad left/right = cycle mode cards
+  if (xboxBtnJustPressed(gp, XBOX.DPAD_LEFT) || xboxBtnJustPressed(gp, XBOX.DPAD_RIGHT)) {
+    var modes = ['Solo','Duos','Trios','Squads','LTM'];
+    var cur = modes.indexOf(selectedMode);
+    var next = xboxBtnJustPressed(gp, XBOX.DPAD_RIGHT) ? (cur+1)%modes.length : (cur-1+modes.length)%modes.length;
+    var el = document.getElementById('mc_'+modes[next]);
+    if (el) el.click();
+  }
+  // LB/RB = cycle nav tabs
+  if (xboxBtnJustPressed(gp, XBOX.LB)) {
+    var tabs = ['navLobby','navLocker','navShop','navBP'];
+    var screens = ['lobby','locker','shop','bp'];
+    var curIdx = screens.indexOf(currentScreen);
+    var prevIdx = (curIdx - 1 + tabs.length) % tabs.length;
+    showScreen(screens[prevIdx]);
+  }
+  if (xboxBtnJustPressed(gp, XBOX.RB)) {
+    var tabs2 = ['lobby','locker','shop','bp'];
+    var curIdx2 = tabs2.indexOf(currentScreen);
+    showScreen(tabs2[(curIdx2+1)%tabs2.length]);
+  }
+  // START = Play
+  if (xboxBtnJustPressed(gp, XBOX.START)) {
+    var pb = document.getElementById('playBtn');
+    if (pb) pb.click();
+  }
+}
+
+// ── IN-GAME CONTROLS ──
+// Xbox layout:
+//   Left stick  = Move (WASD equivalent)
+//   Right stick = Look (mouse equivalent) 
+//   RT          = Shoot (hold to fire auto, tap for semi)
+//   LT          = Aim down sights (tighter spread)
+//   A           = Jump
+//   B           = Crouch (future)
+//   X           = Reload
+//   Y           = Swap weapon (cycle)
+//   RB          = Next weapon
+//   LB          = Previous weapon
+//   D-pad Up    = Medkit / use item
+//   D-pad Down  = Drop weapon
+//   D-pad Left/Right = Cycle inventory
+//   START       = Pause / back to lobby
+//   RS (click)  = Sprint toggle
+//   LS (click)  = Toggle map
+
+var xboxAiming = false;  // LT = aiming
+var xboxSprinting = false;
+var xboxShootHeld = false;
+var xboxLastShot = 0;
+
+function handleXboxGame(gp, dt) {
+  var now = performance.now();
+
+  // ── LEFT STICK: MOVEMENT ──
+  var lx = applyDeadZone(gp.axes[XBOX.LS_X]);
+  var ly = applyDeadZone(gp.axes[XBOX.LS_Y]);
+
+  if (lx !== 0 || ly !== 0) {
+    var fw = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+    var rt = new THREE.Vector3( Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+    var spd = xboxSprinting ? 7.0 : 4.5;
+    // ly is forward/back (-1=forward, +1=back)
+    player.vel.x = (-ly * fw.x + lx * rt.x) * spd;
+    player.vel.z = (-ly * fw.z + lx * rt.z) * spd;
+    document.getElementById('sprintHUD').style.opacity = xboxSprinting ? 1 : 0;
+  } else {
+    player.vel.x *= 0.85;
+    player.vel.z *= 0.85;
+    document.getElementById('sprintHUD').style.opacity = 0;
+  }
+
+  // ── RIGHT STICK: LOOK ──
+  var rx = applyDeadZone(gp.axes[XBOX.RS_X]);
+  var ry = applyDeadZone(gp.axes[XBOX.RS_Y]);
+  var lookSpeed = xboxAiming ? 1.4 : 2.8; // slower when aiming
+  if (rx !== 0) player.yaw   -= rx * lookSpeed * dt;
+  if (ry !== 0) player.pitch  = Math.max(-1.3, Math.min(0.95, player.pitch - ry * lookSpeed * dt));
+
+  // ── TRIGGERS ──
+  var lt = xboxTriggerVal(gp, XBOX.LT);
+  var rt_val = xboxTriggerVal(gp, XBOX.RT);
+
+  // LT = Aim (tighten spread)
+  xboxAiming = lt > 0.5;
+  var spreadMult = xboxAiming ? 0.45 : 1.0; // ADS tightens spread
+
+  // RT = Shoot
+  if (rt_val > 0.5 && !player.reloading && player.alive && !gliderActive) {
+    if (now - xboxLastShot > player.weapon.rate) {
+      if (player.weapon.ammo > 0) {
+        xboxLastShot = now;
+        player.weapon.ammo--;
+        var origin = camera.getWorldPosition(new THREE.Vector3());
+        var dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(player.pitch, player.yaw, 0, 'YXZ'));
+        for (var p = 0; p < (player.weapon.pellets||1); p++) {
+          doShot(origin, dir, player.weapon.dmg, true, player.weapon.spread * spreadMult);
+        }
+        gunKick = 1; muzzleTimer = 1;
+        // Rumble on shoot (vibration API — works on Chrome with Xbox)
+        xboxRumble(gp, 0.3, 0.6, 80);
+      } else if (!player.reloading) {
+        doReload();
+      }
+    }
+  }
+
+  // ── FACE BUTTONS ──
+
+  // A = Jump
+  if (xboxBtnJustPressed(gp, XBOX.A) && player.onGround && !gliderActive) {
+    player.vel.y = 8;
+    player.onGround = false;
+  }
+
+  // A during glide = deploy glider early
+  if (xboxBtnJustPressed(gp, XBOX.A) && gliderActive && !gliderDeployed) {
+    gliderDeployed = true;
+    player.vel.y = -4;
+  }
+
+  // X = Reload
+  if (xboxBtnJustPressed(gp, XBOX.X) && !player.reloading && player.weapon.ammo < player.weapon.max) {
+    doReload();
+    xboxRumble(gp, 0.1, 0.1, 200);
+  }
+
+  // Y = Quick swap to AR / last weapon
+  if (xboxBtnJustPressed(gp, XBOX.Y)) {
+    var wkeys = ['pistol','ar','smg','sniper','shotgun'];
+    var cur = wkeys.indexOf(player.weapon.key);
+    // Swap to AR if not on AR, else go to previous
+    var next = player.weapon.key === 'ar' ?
+      (cur === 0 ? 1 : cur-1) :
+      wkeys.indexOf('ar');
+    player.weapon = Object.assign({},WEAPONS[wkeys[next]],{key:wkeys[next]});
+    setFPSGun(wkeys[next]);
+    updateHUD();
+  }
+
+  // RB = Next weapon
+  if (xboxBtnJustPressed(gp, XBOX.RB)) {
+    var wk = ['pistol','ar','smg','sniper','shotgun'];
+    var nxt = (wk.indexOf(player.weapon.key)+1)%wk.length;
+    player.weapon = Object.assign({},WEAPONS[wk[nxt]],{key:wk[nxt]});
+    setFPSGun(wk[nxt]); updateHUD();
+  }
+
+  // LB = Previous weapon
+  if (xboxBtnJustPressed(gp, XBOX.LB)) {
+    var wk2 = ['pistol','ar','smg','sniper','shotgun'];
+    var prev = (wk2.indexOf(player.weapon.key)-1+wk2.length)%wk2.length;
+    player.weapon = Object.assign({},WEAPONS[wk2[prev]],{key:wk2[prev]});
+    setFPSGun(wk2[prev]); updateHUD();
+  }
+
+  // RS click = Sprint toggle
+  if (xboxBtnJustPressed(gp, XBOX.RS)) {
+    xboxSprinting = !xboxSprinting;
+  }
+
+  // D-pad Up = Use medkit/shield if nearby loot
+  if (xboxBtnJustPressed(gp, XBOX.DPAD_UP)) {
+    keys['e'] = true;
+    setTimeout(function(){ keys['e']=false; }, 100);
+  }
+
+  // START = Back to lobby
+  if (xboxBtnJustPressed(gp, XBOX.START)) {
+    if (gameRunning) {
+      gameRunning = false;
+      renderer.setAnimationLoop(null);
+      showScreen('lobby');
+    }
+  }
+
+  // B = Open chest / interact (same as E)
+  if (xboxBtnJustPressed(gp, XBOX.B)) {
+    keys['e'] = true;
+    setTimeout(function(){ keys['e']=false; }, 100);
+  }
+
+  // ── GLIDER PHASE: left stick steers ──
+  if (gliderActive) {
+    var fw2 = new THREE.Vector3(-Math.sin(player.yaw),0,-Math.cos(player.yaw));
+    var rt2 = new THREE.Vector3( Math.cos(player.yaw),0,-Math.sin(player.yaw));
+    if (ly !== 0) player.pos.addScaledVector(fw2, -ly*5*dt);
+    if (lx !== 0) player.pos.addScaledVector(rt2,  lx*4*dt);
+  }
+}
+
+// ── CONTROLLER VIBRATION (rumble) ──
+function xboxRumble(gp, weakMag, strongMag, durationMs) {
+  if (!gp || !gp.vibrationActuator) return;
+  try {
+    if (gp.vibrationActuator.playEffect) {
+      gp.vibrationActuator.playEffect('dual-rumble', {
+        startDelay: 0,
+        duration: durationMs,
+        weakMagnitude: weakMag,
+        strongMagnitude: strongMag,
+      });
+    }
+  } catch(e) {}
+}
+
+// Rumble on taking damage (called from playerDmg)
+var _origPlayerDmg = playerDmg;
+playerDmg = function(dmg) {
+  _origPlayerDmg(dmg);
+  if (xboxState.connected) {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    var gp = pads[xboxState.padIndex];
+    if (gp) xboxRumble(gp, 0.6, 0.8, 200);
+  }
+};
+
+// Rumble on kill
+var _origKillBot = killBot;
+killBot = function(bot) {
+  _origKillBot(bot);
+  if (xboxState.connected) {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    var gp = pads[xboxState.padIndex];
+    if (gp) xboxRumble(gp, 0.2, 0.5, 120);
+  }
+};
+
+// ── SHOW XBOX BUTTON HINTS IN HUD ──
+function buildXboxHints() {
+  var existing = document.getElementById('xboxHints');
+  if (existing) return;
+  var div = document.createElement('div');
+  div.id = 'xboxHints';
+  div.style.cssText = 'position:fixed;bottom:60px;left:18px;font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px;line-height:1.8;pointer-events:none;z-index:9999;display:none';
+  div.innerHTML =
+    '<span style="color:#107c10;font-weight:700">XBOX CONTROLS</span><br>' +
+    '🕹️ L-Stick = Move &nbsp; R-Stick = Look<br>' +
+    'RT = Shoot &nbsp; LT = Aim<br>' +
+    'A = Jump &nbsp; X = Reload<br>' +
+    'RB/LB = Cycle Weapon &nbsp; Y = Swap<br>' +
+    'B/D↑ = Interact &nbsp; RS = Sprint<br>' +
+    'START = Back to Lobby';
+  document.body.appendChild(div);
+  // Show hints when controller connected
+  window.addEventListener('gamepadconnected', function(){
+    div.style.display = 'block';
+  });
+}
+buildXboxHints();
+
+// ── INTEGRATE INTO GAME LOOP ──
+// Hook into the existing game loop
+var _origGameLoop = gameLoop;
+gameLoop = function(ts) {
+  var dt = Math.min((ts - (gameLoop._lastTs||ts))/1000, 0.05);
+  gameLoop._lastTs = ts;
+  pollXboxController(dt);
+  _origGameLoop(ts);
+};
+
+// Also poll in lobby (not in game loop)
+setInterval(function(){
+  if (currentScreen !== 'game') {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(var i=0;i<pads.length;i++){
+      if(pads[i]&&pads[i].connected&&pads[i].index===xboxState.padIndex){
+        pollXboxController(0.016);
+        break;
+      }
+    }
+  }
+}, 16);
+
+// ── SHOW CONTROLLER STATUS ON PAGE LOAD ──
+(function checkInitialGamepads(){
+  // Some browsers need a user gesture before reporting gamepads.
+  // We check on first keypress/click too.
+  function checkPads(){
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for(var i=0;i<pads.length;i++){
+      if(pads[i]&&pads[i].connected&&!xboxState.connected){
+        xboxState.connected=true;
+        xboxState.padIndex=pads[i].index;
+        showXboxConnected('🎮 Controller Found: '+pads[i].id.split('(')[0].substring(0,30));
+        document.getElementById('xboxHUD').style.display='block';
+        var hints=document.getElementById('xboxHints');
+        if(hints) hints.style.display='block';
+      }
+    }
+  }
+  document.addEventListener('click', checkPads, {once:false});
+  document.addEventListener('keydown', checkPads, {once:false});
+  setTimeout(checkPads, 1000);
+})();
+
 </script>
 </body>
 </html>
