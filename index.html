@@ -1264,6 +1264,7 @@ window.addEventListener('resize',function(){if(!renderer)return;camera.aspect=in
 function gameLoop(ts){
   if(!gameRunning) return;
   var dt=Math.min((ts-lastT)/1000,.05); lastT=ts;
+  pollXboxController(dt); // Xbox controller polling
   if(inVR) updateVRInput();
   updatePlayer(dt);
   updateBots(dt);
@@ -1302,8 +1303,14 @@ function updatePlayer(dt){
       document.getElementById('gliderHUD').style.display='none';
       if(!inVR) document.getElementById('gameCanvas').requestPointerLock().catch(function(){});
     }
-    camPivot.position.set(player.pos.x,player.pos.y+1.68,player.pos.z);
-    camPivot.rotation.y=player.yaw; camera.rotation.x=player.pitch;
+    // Desktop: manually drive camera. VR: let WebXR do it, we move scene instead.
+    if(!inVR){
+      camera.position.set(player.pos.x,player.pos.y+1.68,player.pos.z);
+      camera.rotation.order='YXZ';
+      camera.rotation.y=player.yaw; camera.rotation.x=player.pitch;
+    } else {
+      scene.position.set(-player.pos.x,-player.pos.y,-player.pos.z);
+    }
     return;
   }
 
@@ -1353,8 +1360,12 @@ function updatePlayer(dt){
   if(player.pos.y<=0){player.pos.y=0;player.vel.y=0;player.onGround=true;}
 
   if(!inVR){
-    camPivot.position.set(player.pos.x,player.pos.y+1.68,player.pos.z);
-    camPivot.rotation.y=player.yaw; camera.rotation.x=player.pitch;
+    camera.position.set(player.pos.x,player.pos.y+1.68,player.pos.z);
+    camera.rotation.order='YXZ';
+    camera.rotation.y=player.yaw; camera.rotation.x=player.pitch;
+  } else {
+    // VR: shift scene so headset origin matches player position
+    scene.position.set(-player.pos.x,-player.pos.y,-player.pos.z);
   }
 
   // LOOT & CHEST tips
@@ -1457,6 +1468,7 @@ function killBot(bot){
   bot.mesh.rotation.z=Math.PI/2*(Math.random()>.5?1:-1); bot.mesh.position.y=-.3;
   setTimeout(function(){var pool=new THREE.Mesh(new THREE.CircleGeometry(.55+Math.random()*.35,10),new THREE.MeshBasicMaterial({color:0x880000,transparent:true,opacity:.82,depthWrite:false}));pool.rotation.x=-Math.PI/2;pool.position.set(bot.pos.x,.02,bot.pos.z);scene.add(pool);},180);
   player.kills++; addKillFeed('You eliminated '+bot.name);
+  if(typeof xboxRumbleOnKill==="function")xboxRumbleOnKill();
 }
 function addKillFeed(msg){var kf=document.getElementById('killFeed');var el=document.createElement('div');el.className='kfe';el.textContent=msg;kf.prepend(el);setTimeout(function(){el.remove();},3500);}
 function updateStorm(dt){
@@ -1553,53 +1565,91 @@ function updateVRInput(){
   var session=renderer.xr.getSession(); if(!session)return;
   var dt=1/72; vrTurnCd-=dt;
   var xrCam=renderer.xr.getCamera(camera);
+
   session.inputSources.forEach(function(src){
     if(!src.gamepad)return;
-    var gp=src.gamepad,left=src.handedness==='left',right=src.handedness==='right';
+    var gp=src.gamepad;
+    var left=src.handedness==='left';
+    var right=src.handedness==='right';
     var sx=gp.axes.length>2?gp.axes[2]:(gp.axes[0]||0);
     var sy=gp.axes.length>3?gp.axes[3]:(gp.axes[1]||0);
+    var dz=0.18;
+
+    // LEFT STICK = MOVE (relative to headset facing direction)
     if(left&&player.alive){
-      var dz=.18;
       if(Math.abs(sx)>dz||Math.abs(sy)>dz){
         var hq=xrCam.getWorldQuaternion(new THREE.Quaternion());
         var he=new THREE.Euler().setFromQuaternion(hq,'YXZ');
         var fw=new THREE.Vector3(-Math.sin(he.y),0,-Math.cos(he.y));
         var rt=new THREE.Vector3(Math.cos(he.y),0,-Math.sin(he.y));
-        var mag=Math.min(1,Math.hypot(sx,sy)), spd=4.5*mag;
-        var mv=new THREE.Vector3();
-        mv.addScaledVector(fw,-sy*spd*dt*60); mv.addScaledVector(rt,sx*spd*dt*60);
-        if(!colAt(player.pos.x+mv.x,player.pos.z,.5))player.pos.x+=mv.x;
-        if(!colAt(player.pos.x,player.pos.z+mv.z,.5))player.pos.z+=mv.z;
+        var mag=Math.min(1,Math.hypot(sx,sy));
+        var spd=4.5*mag*dt*60;
+        var nx=player.pos.x+(-sy*fw.x+sx*rt.x)*spd;
+        var nz=player.pos.z+(-sy*fw.z+sx*rt.z)*spd;
+        if(!colAt(nx,player.pos.z,.5))player.pos.x=nx;
+        if(!colAt(player.pos.x,nz,.5))player.pos.z=nz;
       }
-      if(gp.buttons[4]&&gp.buttons[4].pressed&&!vrGrip0&&!player.reloading&&player.weapon.ammo<player.weapon.max){doReload();vrGrip0=true;}
-      if(!gp.buttons[4]||!gp.buttons[4].pressed)vrGrip0=false;
+      var lg=gp.buttons[4]?gp.buttons[4].pressed:false;
+      if(lg&&!vrGrip0&&!player.reloading&&player.weapon.ammo<player.weapon.max){
+        doReload();vrGrip0=true;
+        if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.2,120);
+      }
+      if(!lg)vrGrip0=false;
     }
+
+    // RIGHT STICK = SNAP TURN + TRIGGER = SHOOT FROM GUN DIRECTION
     if(right&&player.alive){
-      if(Math.abs(sx)>.65&&vrTurnCd<=0){player.yaw+=sx>0?-Math.PI/4:Math.PI/4;vrTurnCd=.28;}
-      var trig=gp.buttons[0]?gp.buttons[0].value:0;
+      if(Math.abs(sx)>0.65&&vrTurnCd<=0){
+        player.yaw+=sx>0?-Math.PI/4:Math.PI/4;
+        vrTurnCd=0.28;
+        if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.15,40);
+      }
+      if(gliderActive&&sy<-0.7&&!gliderDeployed){gliderDeployed=true;player.vel.y=-4;}
+
+      // RIGHT TRIGGER = SHOOT — ray from controller world direction (aim with hand)
+      var trigVal=gp.buttons[0]?gp.buttons[0].value:0;
       var now=performance.now();
-      if(trig>.5&&!player.reloading&&now-player.lastShot>player.weapon.rate){
+      if(trigVal>0.5&&!player.reloading&&now-player.lastShot>player.weapon.rate&&player.alive){
         if(player.weapon.ammo>0){
           player.lastShot=now; player.weapon.ammo--;
-          var origin=vrCtrl1.getWorldPosition(new THREE.Vector3());
-          var dir=new THREE.Vector3(0,0,-1).applyQuaternion(vrCtrl1.getWorldQuaternion(new THREE.Quaternion()));
-          for(var p=0;p<(player.weapon.pellets||1);p++) doShot(origin,dir,player.weapon.dmg,true,player.weapon.spread);
-          gunKick=1; muzzleTimer=1;
-          if(gp.hapticActuators&&gp.hapticActuators[0]) gp.hapticActuators[0].pulse(.6,60);
-        } else doReload();
+          var gunOrigin=vrCtrl1.getWorldPosition(new THREE.Vector3());
+          var gunQuat=vrCtrl1.getWorldQuaternion(new THREE.Quaternion());
+          var gunDir=new THREE.Vector3(0,0,-1).applyQuaternion(gunQuat).normalize();
+          for(var p=0;p<(player.weapon.pellets||1);p++){
+            doShot(gunOrigin,gunDir,player.weapon.dmg,true,player.weapon.spread);
+          }
+          gunKick=1;muzzleTimer=1;
+          if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.7,65);
+        } else {
+          doReload();
+          if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.2,200);
+        }
       }
-      if(gp.buttons[4]&&gp.buttons[4].pressed&&!vrGrip1){
+
+      // RIGHT GRIP = cycle weapon
+      var rg=gp.buttons[4]?gp.buttons[4].pressed:false;
+      if(rg&&!vrGrip1){
         var wk=['pistol','ar','smg','sniper','shotgun'];
         var nxt=(wk.indexOf(player.weapon.key)+1)%wk.length;
         player.weapon=Object.assign({},WEAPONS[wk[nxt]],{key:wk[nxt]});
-        if(vrGun)vrCtrl1.remove(vrGun); vrGun=buildGun(wk[nxt]); vrGun.scale.setScalar(1.15); vrCtrl1.add(vrGun);
+        if(vrGun)vrCtrl1.remove(vrGun);
+        vrGun=buildGun(wk[nxt]);vrGun.scale.setScalar(1.15);vrCtrl1.add(vrGun);
         vrGrip1=true;
+        if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.3,80);
       }
-      if(!gp.buttons[4]||!gp.buttons[4].pressed)vrGrip1=false;
+      if(!rg)vrGrip1=false;
+
+      // A button = jump (Quest: button index 3)
+      var aBtn=gp.buttons[3]?gp.buttons[3].pressed:false;
+      if(aBtn&&player.onGround){
+        player.vel.y=8;player.onGround=false;
+        if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.2,50);
+      }
     }
   });
-  camPivot.position.set(player.pos.x,player.pos.y,player.pos.z);
-  camPivot.rotation.y=player.yaw;
+
+  // Move scene so XR headset origin = player position (no spinning!)
+  scene.position.set(-player.pos.x,-player.pos.y,-player.pos.z);
 }
 
 // ══════════════════════════════════════════════════
@@ -1814,25 +1864,30 @@ function handleXboxGame(gp, dt) {
   var ly = applyDeadZone(gp.axes[XBOX.LS_Y]);
 
   if (lx !== 0 || ly !== 0) {
-    var fw = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
-    var rt = new THREE.Vector3( Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+    var fwX = -Math.sin(player.yaw), fwZ = -Math.cos(player.yaw);
+    var rtX =  Math.cos(player.yaw), rtZ = -Math.sin(player.yaw);
     var spd = xboxSprinting ? 7.0 : 4.5;
-    // ly is forward/back (-1=forward, +1=back)
-    player.vel.x = (-ly * fw.x + lx * rt.x) * spd;
-    player.vel.z = (-ly * fw.z + lx * rt.z) * spd;
+    player.vel.x = (-ly*fwX + lx*rtX) * spd;
+    player.vel.z = (-ly*fwZ + lx*rtZ) * spd;
     document.getElementById('sprintHUD').style.opacity = xboxSprinting ? 1 : 0;
   } else {
-    player.vel.x *= 0.85;
-    player.vel.z *= 0.85;
+    player.vel.x *= 0.8;
+    player.vel.z *= 0.8;
     document.getElementById('sprintHUD').style.opacity = 0;
   }
 
-  // ── RIGHT STICK: LOOK ──
+  // ── RIGHT STICK: LOOK (moves camera / turns character) ──
   var rx = applyDeadZone(gp.axes[XBOX.RS_X]);
   var ry = applyDeadZone(gp.axes[XBOX.RS_Y]);
-  var lookSpeed = xboxAiming ? 1.4 : 2.8; // slower when aiming
+  var lookSpeed = xboxAiming ? 1.6 : 3.2;
   if (rx !== 0) player.yaw   -= rx * lookSpeed * dt;
   if (ry !== 0) player.pitch  = Math.max(-1.3, Math.min(0.95, player.pitch - ry * lookSpeed * dt));
+  // Apply look to camera immediately so it feels responsive
+  if(!inVR && (rx!==0||ry!==0)){
+    camera.rotation.order='YXZ';
+    camera.rotation.y = player.yaw;
+    camera.rotation.x = player.pitch;
+  }
 
   // ── TRIGGERS ──
   var lt = xboxTriggerVal(gp, XBOX.LT);
@@ -1961,27 +2016,9 @@ function xboxRumble(gp, weakMag, strongMag, durationMs) {
   } catch(e) {}
 }
 
-// Rumble on taking damage (called from playerDmg)
-var _origPlayerDmg = playerDmg;
-playerDmg = function(dmg) {
-  _origPlayerDmg(dmg);
-  if (xboxState.connected) {
-    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    var gp = pads[xboxState.padIndex];
-    if (gp) xboxRumble(gp, 0.6, 0.8, 200);
-  }
-};
-
-// Rumble on kill
-var _origKillBot = killBot;
-killBot = function(bot) {
-  _origKillBot(bot);
-  if (xboxState.connected) {
-    var pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    var gp = pads[xboxState.padIndex];
-    if (gp) xboxRumble(gp, 0.2, 0.5, 120);
-  }
-};
+// Rumble helpers — called directly from playerDmg/killBot
+function xboxRumbleOnDmg(){ if(!xboxState.connected)return; var pads=navigator.getGamepads?navigator.getGamepads():[]; var gp=pads[xboxState.padIndex]; if(gp)xboxRumble(gp,.6,.8,200); }
+function xboxRumbleOnKill(){ if(!xboxState.connected)return; var pads=navigator.getGamepads?navigator.getGamepads():[]; var gp=pads[xboxState.padIndex]; if(gp)xboxRumble(gp,.2,.5,120); }
 
 // ── SHOW XBOX BUTTON HINTS IN HUD ──
 function buildXboxHints() {
@@ -2006,15 +2043,7 @@ function buildXboxHints() {
 }
 buildXboxHints();
 
-// ── INTEGRATE INTO GAME LOOP ──
-// Hook into the existing game loop
-var _origGameLoop = gameLoop;
-gameLoop = function(ts) {
-  var dt = Math.min((ts - (gameLoop._lastTs||ts))/1000, 0.05);
-  gameLoop._lastTs = ts;
-  pollXboxController(dt);
-  _origGameLoop(ts);
-};
+// pollXboxController is called directly inside gameLoop below
 
 // Also poll in lobby (not in game loop)
 setInterval(function(){
