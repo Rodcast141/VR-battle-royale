@@ -7,19 +7,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden;height:100vh;width:100vw}
-
+ 
 /* ── SCREENS ── */
 .screen{position:fixed;inset:0;display:none;z-index:10}
 .screen.active{display:flex}
-
+ 
 /* ── LOBBY ── */
 #sLobby{flex-direction:column;background:#0a0e14}
 #lobbyBg{position:absolute;inset:0;background:linear-gradient(160deg,#0d1b2e 0%,#1a2744 45%,#0d2135 75%,#0a1520 100%);z-index:0;pointer-events:none}
 #lobbyContent{position:relative;z-index:5;display:flex;flex-direction:column;width:100%;height:100%}
-
+ 
 /* stars */
 #starCanvas{position:absolute;inset:0;z-index:1;pointer-events:none}
-
+ 
 /* Top bar */
 #topBar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(0,0,0,.65);border-bottom:1px solid rgba(255,255,255,.08);position:relative;z-index:10;flex-shrink:0}
 .logo{font-size:24px;font-weight:900;letter-spacing:3px}
@@ -32,14 +32,14 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .vbucks .vi{width:18px;height:18px;background:#1a90d9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900}
 .vbucks .va{font-size:13px;font-weight:700;color:#f5c518}
 .profBtn{width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#1a90d9,#7b2fbe);border:2px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
-
+ 
 /* Main lobby area */
 #lobbyMain{flex:1;position:relative;overflow:hidden;z-index:5}
-
+ 
 /* Character showcase */
 #charShowcase{position:absolute;bottom:160px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none}
 #charCanvas{display:block;filter:drop-shadow(0 0 40px rgba(26,144,217,.35))}
-
+ 
 /* Side panels */
 #newsPanel{position:absolute;top:16px;left:20px;width:190px;z-index:6}
 .panelLabel{font-size:9px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:8px}
@@ -49,7 +49,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .newsBody{padding:8px}
 .newsTag{font-size:9px;font-weight:700;letter-spacing:2px;color:#f5c518;text-transform:uppercase}
 .newsText{font-size:10px;color:rgba(255,255,255,.65);margin-top:2px;line-height:1.4}
-
+ 
 #bpPanel{position:absolute;top:16px;right:20px;width:175px;z-index:6}
 .bpHeader{background:linear-gradient(135deg,#7b2fbe,#4a1a8c);padding:10px;border-radius:6px 6px 0 0;border:1px solid rgba(123,47,190,.5)}
 .bpTitle{font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
@@ -61,11 +61,11 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .bpLevel span{font-size:10px;color:rgba(255,255,255,.4);font-weight:400}
 .bpRewards{display:flex;gap:4px;margin-top:8px}
 .bpR{flex:1;aspect-ratio:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px}
-
+ 
 /* Bottom bar */
 #bottomBar{position:relative;z-index:10;background:linear-gradient(0deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.5) 100%);padding:14px 20px 18px;flex-shrink:0}
 .bottomInner{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-
+ 
 /* Mode cards */
 #modeRow{display:flex;gap:8px;flex:1;justify-content:center;align-items:flex-end}
 .modeCard{background:rgba(13,22,38,.9);border:2px solid rgba(255,255,255,.12);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .18s;flex-shrink:0;width:130px}
@@ -84,17 +84,17 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .featBadge{display:none;position:absolute;top:7px;right:7px;font-size:7px;font-weight:900;letter-spacing:2px;background:#f5c518;color:#000;padding:2px 5px;border-radius:2px}
 .modeCard{position:relative}
 .modeCard.featured .featBadge{display:block}
-
+ 
 /* Play section */
 .playSection{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
 #playBtn{padding:14px 48px;font-size:18px;font-weight:900;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(180deg,#f5c518 0%,#e8832a 100%);color:#000;border:none;border-radius:5px;cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s;box-shadow:0 4px 20px rgba(245,197,24,.3);min-width:180px}
 #playBtn:hover{transform:scale(1.04);box-shadow:0 6px 28px rgba(245,197,24,.5)}
 #playBtn:active{transform:scale(.97)}
 .playSub{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase}
-
+ 
 .lockerSideBtn{padding:8px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.7);cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s;flex-shrink:0}
 .lockerSideBtn:hover{background:rgba(255,255,255,.14);color:#fff}
-
+ 
 /* ── OVERLAY SCREENS (locker, shop, bp) ── */
 .overlayScreen{position:fixed;inset:0;z-index:50;display:none;flex-direction:column}
 .overlayScreen.open{display:flex}
@@ -102,7 +102,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .backBtn{padding:7px 15px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s}
 .backBtn:hover{background:rgba(255,255,255,.15)}
 .overlayTitle{font-size:18px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
-
+ 
 /* Locker */
 #sLocker{background:#0a0e14}
 .lockerBody{display:flex;flex:1;overflow:hidden}
@@ -131,7 +131,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .lpRarity{font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:.5}
 .equipBtn{width:100%;padding:10px;background:linear-gradient(180deg,#f5c518,#e8832a);color:#000;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s}
 .equipBtn:hover{transform:scale(1.02)}
-
+ 
 /* Shop */
 #sShop{background:#0a0e14}
 .shopBody{flex:1;overflow-y:auto;padding:18px 22px}
@@ -146,7 +146,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .shopItemPrice{display:flex;align-items:center;gap:4px;margin-top:5px}
 .vIcon{width:14px;height:14px;background:#1a90d9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:900;flex-shrink:0}
 .shopItemPrice span{font-size:12px;font-weight:700;color:#f5c518}
-
+ 
 /* Battle Pass */
 #sBP{background:#0a0e14}
 .bpScreenHeader{padding:14px 22px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(123,47,190,.25);flex-shrink:0}
@@ -165,7 +165,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .bpItemDone{position:absolute;top:3px;right:4px;font-size:8px;color:#cc44ff}
 .bpItemBar{position:absolute;bottom:0;left:0;right:0;height:2px;background:#7b2fbe}
 .bpItemLock{font-size:8px;color:rgba(255,255,255,.2);margin-top:2px}
-
+ 
 /* ── BATTLE BUS SCREEN ── */
 #sBus{background:#050a10;flex-direction:column;align-items:center;justify-content:center}
 #busCanvas{position:absolute;inset:0;width:100%;height:100%}
@@ -180,12 +180,12 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(245,197,24,.4)}50%{box-shadow:0 0 40px rgba(245,197,24,.8)}}
 #jumpBtn:hover{transform:scale(1.04)}
 .busPassengers{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:2px}
-
+ 
 /* ── GAME HUD ── */
 #sGame{background:transparent;pointer-events:none}
 #gameCanvas{position:fixed;inset:0;z-index:1;display:block}
 #gameHUDOverlay{position:fixed;inset:0;z-index:20;pointer-events:none}
-
+ 
 #xhair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:24px;height:24px}
 .xl{position:absolute;background:rgba(255,255,255,.9)}
 .xh{width:9px;height:1.5px;top:50%;margin-top:-.75px}
@@ -193,7 +193,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .xv{width:1.5px;height:9px;left:50%;margin-left:-.75px}
 .xv.t{top:0}.xv.b{bottom:0}
 .xdot{width:3px;height:3px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
-
+ 
 #healthBar{position:absolute;bottom:20px;left:18px;width:240px}
 .statRow{display:flex;align-items:center;gap:8px;margin-bottom:5px}
 .statIcon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
@@ -204,18 +204,18 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 #hpFill{height:100%;background:linear-gradient(90deg,#e74c3c,#ff6b6b);border-radius:3px;transition:width .12s}
 #shFill{height:100%;background:linear-gradient(90deg,#2980b9,#74b9ff);border-radius:3px;transition:width .12s}
 .statVal{font-size:20px;font-weight:900;min-width:28px;text-align:right}
-
+ 
 #ammoHUD{position:absolute;bottom:20px;right:18px;text-align:right}
 #wepLabel{font-size:10px;letter-spacing:2px;color:#f5c518;text-transform:uppercase;margin-bottom:2px}
 #ammoNum{font-size:44px;font-weight:900;color:#fff;line-height:1}
 #ammoMax{font-size:14px;color:rgba(255,255,255,.3)}
 #reloadBar{width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:4px;overflow:hidden;display:none;margin-left:auto}
 #reloadFill{height:100%;background:#f5c518;width:0%}
-
+ 
 #topHUD{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:28px;background:rgba(0,0,0,.6);padding:7px 22px;border-radius:4px;border:1px solid rgba(255,255,255,.07)}
 .topStat{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;text-align:center}
 .topStat span{display:block;font-size:24px;font-weight:900;color:#fff;letter-spacing:0}
-
+ 
 #stormWarn{position:absolute;top:76px;left:50%;transform:translateX(-50%);font-size:10px;color:#cc44ff;letter-spacing:4px;opacity:0;transition:opacity .3s;text-transform:uppercase;pointer-events:none;text-shadow:0 0 10px #cc44ff}
 #killFeed{position:absolute;top:54px;left:14px;width:260px}
 .kfe{font-size:10px;color:#ff6b6b;background:rgba(0,0,0,.6);padding:3px 10px;margin-bottom:2px;border-left:2px solid #ff6b6b;animation:kfade 3.5s forwards}
@@ -229,14 +229,14 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 #minimap{position:absolute;top:14px;right:14px;width:88px;height:88px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:rgba(0,8,18,.85)}
 #mmCanvas{width:88px;height:88px}
 #sprintHUD{position:absolute;bottom:110px;left:18px;font-size:9px;letter-spacing:3px;color:#2dc653;text-transform:uppercase;opacity:0;transition:opacity .2s}
-
+ 
 /* Glider altimeter */
 #gliderHUD{position:absolute;top:80px;left:50%;transform:translateX(-50%);text-align:center;display:none;pointer-events:none}
 .gAlt{font-size:32px;font-weight:900;color:#fff}
 .gLabel{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase}
 .gTip{font-size:10px;color:#f5c518;letter-spacing:2px;animation:blink .8s ease-in-out infinite;margin-top:4px}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-
+ 
 /* ── RESULT ── */
 #sResult{flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88)}
 #resultTitle{font-size:62px;font-weight:900;letter-spacing:6px;text-transform:uppercase;margin-bottom:10px}
@@ -246,10 +246,10 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 .rLabel{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase}
 .resultBtn{padding:13px 44px;font-size:14px;font-weight:900;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(180deg,#f5c518,#e8832a);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;transition:all .15s}
 .resultBtn:hover{transform:scale(1.03)}
-
+ 
 /* notification toast */
 #toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a3a1a,#0d2a0d);border:2px solid #2dc653;padding:12px 28px;border-radius:6px;font-size:13px;font-weight:700;color:#fff;z-index:9999;letter-spacing:1px;opacity:0;transition:opacity .3s;pointer-events:none}
-
+ 
 #vrBtn{position:fixed;bottom:18px;right:18px;z-index:9999;font-size:12px;font-weight:700;letter-spacing:3px;padding:9px 18px;border:1px solid #aa44ff;color:#aa44ff;background:rgba(0,0,0,.7);cursor:pointer;display:none;border-radius:3px;text-transform:uppercase;font-family:'Lato',sans-serif}
 #vrBtn:hover{background:#aa44ff;color:#000}
 #xboxHUD{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;font-size:10px;font-weight:700;letter-spacing:2px;padding:6px 16px;border:1px solid #107c10;color:#107c10;background:rgba(0,0,0,.75);border-radius:3px;text-transform:uppercase;display:none;pointer-events:none}
@@ -258,7 +258,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
 </style>
 </head>
 <body>
-
+ 
 <!-- ═══════════ LOBBY ═══════════ -->
 <div id="sLobby" class="screen active">
   <div id="lobbyBg"></div>
@@ -279,10 +279,10 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
         <div class="profBtn">R</div>
       </div>
     </div>
-
+ 
     <div id="lobbyMain">
       <canvas id="charCanvas" width="260" height="340" style="position:absolute;bottom:155px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none"></canvas>
-
+ 
       <div id="newsPanel">
         <div class="panelLabel">News</div>
         <div class="newsCard">
@@ -293,7 +293,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
           </div>
         </div>
       </div>
-
+ 
       <div id="bpPanel">
         <div class="bpHeader">
           <div class="bpTitle">Battle Pass</div>
@@ -309,7 +309,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
         </div>
       </div>
     </div>
-
+ 
     <div id="bottomBar">
       <div class="bottomInner">
         <button class="lockerSideBtn" onclick="showScreen('locker')">LOCKER</button>
@@ -364,7 +364,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
     </div>
   </div>
 </div>
-
+ 
 <!-- ═══════════ LOCKER ═══════════ -->
 <div id="sLocker" class="overlayScreen">
   <div class="overlayTop" style="background:#0a0e14">
@@ -391,7 +391,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
     </div>
   </div>
 </div>
-
+ 
 <!-- ═══════════ SHOP ═══════════ -->
 <div id="sShop" class="overlayScreen">
   <div class="overlayTop" style="background:#0a0e14">
@@ -406,7 +406,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
     <div class="shopGrid" id="shopDaily" style="grid-template-columns:repeat(auto-fill,minmax(105px,1fr))"></div>
   </div>
 </div>
-
+ 
 <!-- ═══════════ BATTLE PASS ═══════════ -->
 <div id="sBP" class="overlayScreen">
   <div class="overlayTop" style="background:linear-gradient(90deg,rgba(123,47,190,.5),rgba(10,14,20,.9))">
@@ -428,7 +428,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
     <div class="bpGrid" id="bpGrid"></div>
   </div>
 </div>
-
+ 
 <!-- ═══════════ BATTLE BUS ═══════════ -->
 <div id="sBus" class="screen">
   <canvas id="busCanvas"></canvas>
@@ -444,7 +444,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
     <div class="busPassengers">19 others on board</div>
   </div>
 </div>
-
+ 
 <!-- ═══════════ GAME ═══════════ -->
 <canvas id="gameCanvas" style="position:fixed;inset:0;z-index:1;display:none"></canvas>
 <div id="gameHUDOverlay" style="position:fixed;inset:0;z-index:20;pointer-events:none;display:none">
@@ -495,7 +495,7 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
   <div id="minimap"><canvas id="mmCanvas" width="88" height="88"></canvas></div>
   <div id="sprintHUD">⚡ SPRINTING</div>
 </div>
-
+ 
 <!-- ═══════════ RESULT ═══════════ -->
 <div id="sResult" class="screen">
   <div id="resultTitle"></div>
@@ -506,23 +506,23 @@ body{background:#0a0e14;color:#fff;font-family:'Lato',sans-serif;overflow:hidden
   </div>
   <button class="resultBtn" onclick="showScreen('lobby')">BACK TO LOBBY</button>
 </div>
-
+ 
 <div id="toast"></div>
 <div id="xboxHUD">🎮 XBOX CONTROLLER ACTIVE</div>
 <div id="xboxConnected"></div>
 <button id="vrBtn">ENTER VR</button>
 <div id="lh">DRAG to look · CLICK to capture mouse · ESC to release</div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 'use strict';
-
+ 
 // ══════════════════════════════════════════════════
 //  SCREEN MANAGER — simple, no z-index fights
 // ══════════════════════════════════════════════════
 var currentScreen = 'lobby';
 var activeNav = 'navLobby';
-
+ 
 function showScreen(name) {
   // Hide all overlay screens
   document.querySelectorAll('.overlayScreen').forEach(function(el){
@@ -532,10 +532,10 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(function(el){
     el.classList.remove('active');
   });
-
+ 
   // Nav buttons
   document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active');});
-
+ 
   if (name === 'lobby') {
     document.getElementById('sLobby').classList.add('active');
     document.getElementById('navLobby').classList.add('active');
@@ -568,14 +568,14 @@ function showScreen(name) {
   }
   currentScreen = name;
 }
-
+ 
 function toast(msg) {
   var el = document.getElementById('toast');
   el.textContent = msg;
   el.style.opacity = '1';
   setTimeout(function(){ el.style.opacity = '0'; }, 2500);
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  STAR FIELD
 // ══════════════════════════════════════════════════
@@ -596,7 +596,7 @@ function toast(msg) {
     requestAnimationFrame(draw);
   })();
 })();
-
+ 
 // ══════════════════════════════════════════════════
 //  LOBBY CHARACTER CANVAS
 // ══════════════════════════════════════════════════
@@ -652,7 +652,7 @@ function toast(msg) {
     requestAnimationFrame(draw);
   })();
 })();
-
+ 
 // ══════════════════════════════════════════════════
 //  MODE SELECT
 // ══════════════════════════════════════════════════
@@ -665,7 +665,7 @@ function selectMode(m, el) {
   });
   el.classList.add('selected');
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  LOCKER DATA
 // ══════════════════════════════════════════════════
@@ -684,7 +684,7 @@ var SKINS = [
   {name:'Black Knight',rarity:'rLeg',  icon:'🛡️', color:'#3d2700', r:'LEGENDARY'},
 ];
 var equippedSkin = 0, previewSkin = 0;
-
+ 
 function buildLockerGrid() {
   var grid = document.getElementById('skinGrid');
   grid.innerHTML = '';
@@ -696,7 +696,7 @@ function buildLockerGrid() {
     grid.appendChild(d);
   });
 }
-
+ 
 function previewSkinFn(i) {
   previewSkin = i;
   var s = SKINS[i];
@@ -704,13 +704,13 @@ function previewSkinFn(i) {
   document.getElementById('lpName').textContent = s.name;
   document.getElementById('lpRarity').textContent = s.r + ' OUTFIT';
 }
-
+ 
 function equipSkin() {
   equippedSkin = previewSkin;
   buildLockerGrid();
   toast('✓ Equipped: ' + SKINS[equippedSkin].name);
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  SHOP DATA
 // ══════════════════════════════════════════════════
@@ -730,7 +730,7 @@ var DAILY_ITEMS = [
   {icon:'🦊',name:'Fox Trooper', rarity:'UNCOMMON', price:600,  bg:'#1a0a00',border:'#e8832a'},
   {icon:'🏔️',name:'Summit',      rarity:'UNCOMMON', price:600,  bg:'#0a0a1a',border:'#888'},
 ];
-
+ 
 function buildShopGrid() {
   function makeItem(item, big) {
     var d = document.createElement('div');
@@ -752,7 +752,7 @@ function buildShopGrid() {
   FEATURED_ITEMS.forEach(function(it){ fg.appendChild(makeItem(it,true)); });
   DAILY_ITEMS.forEach(function(it){ dg.appendChild(makeItem(it,false)); });
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  BATTLE PASS GRID
 // ══════════════════════════════════════════════════
@@ -770,12 +770,12 @@ function buildBPGrid() {
     grid.appendChild(d);
   }
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  BATTLE BUS
 // ══════════════════════════════════════════════════
 var busTimer, busCountdown, busAlt = 1500, busAnimId;
-
+ 
 function startBus() {
   showScreen('bus');
   busAlt = 1500;
@@ -796,14 +796,14 @@ function startBus() {
     }
   }, 1000);
 }
-
+ 
 function doJump() {
   clearInterval(busTimer);
   cancelAnimationFrame(busAnimId);
   showScreen('game');
   launchGame();
 }
-
+ 
 function startBusAnim() {
   var c = document.getElementById('busCanvas');
   c.width = innerWidth; c.height = innerHeight;
@@ -866,7 +866,7 @@ function startBusAnim() {
     ctx.fillText('BATTLE BUS',bx,by+24); ctx.textAlign='left';
   })();
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  THREE.JS GAME ENGINE
 // ══════════════════════════════════════════════════
@@ -876,10 +876,10 @@ var mouseLocked=false, dragLooking=false, lastMX=0, lastMY=0;
 var muzzleTimer=0, gunKick=0;
 var gameStartTime=0;
 var keys={};
-
+ 
 var WORLD=600, Grav=-22;
 var obstacles=[];
-
+ 
 function addObs(x,z,w,d){ obstacles.push({x:x,z:z,hw:w/2+0.5,hd:d/2+0.5}); }
 function colAt(x,z,r){
   r = r||1;
@@ -890,13 +890,13 @@ function colAt(x,z,r){
   }
   return false;
 }
-
+ 
 function launchGame() {
   obstacles.length = 0;
   if(renderer){ try{renderer.dispose();}catch(e){} }
   var canvas = document.getElementById('gameCanvas');
   canvas.width = innerWidth; canvas.height = innerHeight;
-
+ 
   renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.setSize(innerWidth,innerHeight);
@@ -904,7 +904,7 @@ function launchGame() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.xr.enabled = true;
   renderer.fog = new THREE.FogExp2(0x0a1520, 0.0028);
-
+ 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a1520);
   camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 600);
@@ -915,7 +915,7 @@ function launchGame() {
   fpsGunPivot.position.set(0.28,-0.26,-0.46);
   fpsGunPivot.rotation.set(0.04,-0.08,0);
   camera.add(fpsGunPivot);
-
+ 
   scene.add(new THREE.AmbientLight(0x334455, 0.9));
   var sun = new THREE.DirectionalLight(0xffeedd,1.3);
   sun.position.set(150,200,80); sun.castShadow=true;
@@ -927,13 +927,13 @@ function launchGame() {
   var fill = new THREE.DirectionalLight(0x4488bb,0.4);
   fill.position.set(-80,40,-80); scene.add(fill);
   scene.add(new THREE.HemisphereLight(0x334455,0x1a2a1a,0.5));
-
+ 
   buildWorld();
   spawnChests();
   spawnLoot();
   spawnBots();
   initStorm();
-
+ 
   player.pos.set(0, 900, 0);
   player.vel.set(0, -30, 0);
   player.hp=100; player.shield=50;
@@ -941,11 +941,11 @@ function launchGame() {
   player.weapon = Object.assign({},WEAPONS.ar,{key:'ar'});
   player.kills=0; player.alive=true;
   player.reloading=false; player.onGround=false;
-
+ 
   player.mesh = buildChar(0x1a3a5c,0xc8a882,0x0a2040);
   player.mesh.visible = false;
   scene.add(player.mesh);
-
+ 
   setFPSGun('ar');
   gliderActive = true;
   gliderDeployed = false;
@@ -957,9 +957,9 @@ function launchGame() {
   renderer.setAnimationLoop(gameLoop);
   initVR();
 }
-
+ 
 var gliderDeployed = false;
-
+ 
 // ── WORLD ──
 function buildWorld(){
   // Ground
@@ -974,14 +974,14 @@ function buildWorld(){
   geo.computeVertexNormals();
   var ground = new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:0x1c3a1c}));
   ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
-
+ 
   // Roads
   var rm = new THREE.MeshLambertMaterial({color:0x1a1a10});
   [[0,0,WORLD,8,0],[0,0,8,WORLD,Math.PI/2]].forEach(function(r){
     var m=new THREE.Mesh(new THREE.PlaneGeometry(r[2],r[3]),rm);
     m.rotation.x=-Math.PI/2; m.rotation.z=r[4]; m.position.set(r[0],0.05,r[1]); scene.add(m);
   });
-
+ 
   // Buildings
   var bldgs=[
     {x:-100,z:-100,w:22,d:18,h:36,c:0x1a2535},{x:-60,z:-120,w:16,d:14,h:50,c:0x1e2a3a},
@@ -1009,7 +1009,7 @@ function buildWorld(){
     }
     addObs(b.x,b.z,b.w,b.d);
   });
-
+ 
   // Trees
   for(var i=0;i<80;i++){
     var x=(Math.random()-.5)*WORLD*.8, z=(Math.random()-.5)*WORLD*.8;
@@ -1021,7 +1021,7 @@ function buildWorld(){
     leaf.position.set(x,h+2,z); leaf.castShadow=true; scene.add(leaf);
     addObs(x,z,1.5,1.5);
   }
-
+ 
   // Rocks/crates
   for(var i=0;i<50;i++){
     var x=(Math.random()-.5)*WORLD*.8, z=(Math.random()-.5)*WORLD*.8;
@@ -1032,7 +1032,7 @@ function buildWorld(){
     addObs(x,z,s*1.5,s*1.5);
   }
 }
-
+ 
 // ── CHESTS ──
 var chests=[];
 function spawnChests(){
@@ -1053,11 +1053,11 @@ function spawnChests(){
     chests.push({group:g,x:p[0],z:p[1],opened:false,glow:glow,spark:spark});
   });
 }
-
+ 
 // ── LOOT ──
 var LTYPES={ammo:{label:'Ammo Pack',c:0xf9a825,e:0x442200},medkit:{label:'Med Kit',c:0x00e676,e:0x004422},shield:{label:'Shield Pot',c:0x7c4dff,e:0x220044},ar:{label:'Assault Rifle',c:0xff6d00,e:0x441100},smg:{label:'SMG',c:0x00b0ff,e:0x003344},sniper:{label:'Sniper',c:0xd500f9,e:0x330044},shotgun:{label:'Shotgun',c:0xff3d00,e:0x440800},shield_s:{label:'Mini Shield',c:0x4fc3f7,e:0x001133}};
 var WEAPONS={pistol:{name:'PISTOL',ammo:12,max:12,dmg:22,rate:330,reload:1100,spread:.07,auto:false,pellets:1},ar:{name:'ASSAULT RIFLE',ammo:30,max:30,dmg:24,rate:115,reload:1900,spread:.035,auto:true,pellets:1},smg:{name:'SMG',ammo:40,max:40,dmg:15,rate:78,reload:1700,spread:.07,auto:true,pellets:1},sniper:{name:'SNIPER RIFLE',ammo:5,max:5,dmg:95,rate:1500,reload:2600,spread:.004,auto:false,pellets:1},shotgun:{name:'SHOTGUN',ammo:8,max:8,dmg:18,rate:750,reload:1000,spread:.18,auto:false,pellets:7}};
-
+ 
 var lootItems=[];
 function spawnLoot(){
   lootItems.forEach(function(l){if(l.mesh)scene.remove(l.mesh);if(l.ring)scene.remove(l.ring);});
@@ -1074,7 +1074,7 @@ function spawnLoot(){
     lootItems.push({x:x,z:z,type:type,collected:false,mesh:mesh,ring:ring,ft:Math.random()*Math.PI*2});
   }
 }
-
+ 
 // ── STORM ──
 var stormMesh, stormInner;
 var storm={r:WORLD*.48,targetR:WORLD*.25,shrink:.055,dmg:.055,phase:1};
@@ -1087,7 +1087,7 @@ function initStorm(){
   stormInner=new THREE.Mesh(geo.clone(),new THREE.MeshBasicMaterial({color:0xcc44ff,transparent:true,opacity:.07,side:THREE.FrontSide}));
   stormInner.position.y=90; scene.add(stormInner);
 }
-
+ 
 // ── CHARACTERS ──
 function buildChar(bc,hc,ac){
   var g=new THREE.Group(), M=function(c){return new THREE.MeshLambertMaterial({color:c});};
@@ -1108,7 +1108,7 @@ function buildChar(bc,hc,ac){
   g._legL=legL;g._legR=legR;g._armL=armL;g._armR=armR;
   return g;
 }
-
+ 
 function buildGun(type){
   var g=new THREE.Group(), M=function(c){return new THREE.MeshLambertMaterial({color:c});};
   if(type==='ar'){
@@ -1140,20 +1140,20 @@ function buildGun(type){
   flash.position.set(0,.01,fz); g.add(flash); g._flash=flash;
   return g;
 }
-
+ 
 function setFPSGun(key){
   if(fpsGunMesh) fpsGunPivot.remove(fpsGunMesh);
   fpsGunMesh=buildGun(key); fpsGunPivot.add(fpsGunMesh);
 }
-
+ 
 // ── PLAYER ──
 var player={pos:new THREE.Vector3(0,5,25),vel:new THREE.Vector3(),hp:100,shield:50,maxHp:100,maxShield:50,yaw:0,pitch:0,weapon:null,lastShot:0,reloading:false,reloadStart:0,kills:0,alive:true,onGround:false,mesh:null};
-
+ 
 // ── BOTS ──
 var BOT_NAMES=['Shadow','Viper','Ghost','Blaze','Axel','Nova','Rex','Kira','Zion','Nyx','Drift','Echo','Flux','Haze','Jinx','Kolt','Luna','Mace','Nash','Orion'];
 var BOT_PALS=[[0x5a0a0a,0xc09070,0x8a1a1a],[0x0a3a0a,0xb0a060,0x1a5a1a],[0x1a1a5a,0xc0a880,0x2a2a8a],[0x4a2a0a,0xc09060,0x7a4a1a],[0x3a0a3a,0xb09080,0x6a1a6a],[0x0a3a3a,0xa0b090,0x1a5a5a],[0x3a3a0a,0xc0a860,0x6a6a1a],[0x0a2a3a,0xa0b0c0,0x1a4a5a]];
 var bots=[];
-
+ 
 function spawnBots(){
   bots.forEach(function(b){if(b.mesh)scene.remove(b.mesh);});
   bots=[];
@@ -1169,7 +1169,7 @@ function spawnBots(){
     bots.push({pos:new THREE.Vector3(x,0,z),alive:true,mesh:mesh,botGun:bg,hp:85+Math.random()*35,maxHp:120,shield:Math.random()*25,name:BOT_NAMES[i],weapon:Object.assign({},WEAPONS[wk],{key:wk}),lastShot:0,reloading:false,reloadStart:0,speed:2.4+Math.random()*1.4,state:'roam',moveCd:0,moveDir:new THREE.Vector3(),strafeCd:0,strafeDir:1,yaw:Math.random()*Math.PI*2,walkT:0});
   }
 }
-
+ 
 // ── BLOOD ──
 var blood=[];
 function spawnBlood(pos,n,big){
@@ -1213,7 +1213,7 @@ function addTracer(from,to,friendly){
   scene.add(line); tracers.push({line:line,life:.1});
 }
 function updateTracers(dt){for(var i=tracers.length-1;i>=0;i--){var t=tracers[i];t.life-=dt;t.line.material.opacity=Math.max(0,t.life/.1*.85);if(t.life<=0){scene.remove(t.line);tracers.splice(i,1);}}}
-
+ 
 // ── SHOOTING ──
 var RC=new THREE.Raycaster();
 function doShot(origin,dir,dmg,friendly,spread){
@@ -1234,7 +1234,7 @@ function doShot(origin,dir,dmg,friendly,spread){
   if(envH.length>0)spawnSparks(envH[0].point);
   addTracer(origin,tracerEnd,friendly);
 }
-
+ 
 // ── INPUT ──
 document.addEventListener('keydown',function(e){keys[e.key.toLowerCase()]=true;if(e.key===' ')e.preventDefault();});
 document.addEventListener('keyup',  function(e){keys[e.key.toLowerCase()]=false;});
@@ -1259,7 +1259,7 @@ document.addEventListener('wheel',function(e){
 document.addEventListener('pointerlockchange',function(){mouseLocked=!!document.pointerLockElement;document.getElementById('lh').style.opacity=mouseLocked?0:1;});
 document.getElementById('gameCanvas').addEventListener('click',function(){if(currentScreen==='game'&&!mouseLocked&&!inVR)document.getElementById('gameCanvas').requestPointerLock();});
 window.addEventListener('resize',function(){if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
-
+ 
 // ── GAME LOOP ──
 function gameLoop(ts){
   if(!gameRunning) return;
@@ -1279,11 +1279,11 @@ function gameLoop(ts){
   renderMinimap(); updateHUD();
   renderer.render(scene,camera);
 }
-
+ 
 function updatePlayer(dt){
   if(!player.alive) return;
   var now=performance.now();
-
+ 
   // GLIDER PHASE
   if(gliderActive){
     player.vel.y+=Grav*dt*.4;
@@ -1313,15 +1313,17 @@ function updatePlayer(dt){
     }
     return;
   }
-
+ 
   // RELOAD
   if(player.reloading&&now-player.reloadStart>player.weapon.reload){
     player.reloading=false;player.weapon.ammo=player.weapon.max;
     document.getElementById('reloadBar').style.display='none';
   }
   if(keys['r']&&!player.reloading&&player.weapon.ammo<player.weapon.max) doReload();
-
+ 
   // MOVE
+  // xboxVelX/Z are set by the Xbox handler and merged here.
+  // Keyboard movement only applies when no Xbox stick input.
   var sprinting=keys['shift']&&(keys['w']||keys['s']||keys['a']||keys['d']);
   var spd=sprinting?7.0:4.5;
   document.getElementById('sprintHUD').style.opacity=sprinting?1:0;
@@ -1335,8 +1337,14 @@ function updatePlayer(dt){
     if(keys['d']||keys['arrowright'])mv.addScaledVector(rt,1);
     if(mv.length()>0) mv.normalize().multiplyScalar(spd);
     if(keys[' ']&&player.onGround){player.vel.y=8;player.onGround=false;}
-    player.vel.x=mv.x; player.vel.z=mv.z;
-
+    // Only apply keyboard vel if Xbox stick is idle — prevents overwrite
+    if(xboxVelX===0&&xboxVelZ===0){
+      player.vel.x=mv.x; player.vel.z=mv.z;
+    } else {
+      // Merge: use Xbox vel, let keyboard jump still work
+      player.vel.x=xboxVelX; player.vel.z=xboxVelZ;
+    }
+ 
     // SHOOT
     if(keys['lmb']&&!player.reloading){
       if(now-player.lastShot>player.weapon.rate){
@@ -1351,14 +1359,14 @@ function updatePlayer(dt){
     }
     if(player.weapon.ammo===0&&!player.reloading) doReload();
   }
-
+ 
   player.vel.y+=Grav*dt;
   var nx=player.pos.x+player.vel.x*dt, nz=player.pos.z+player.vel.z*dt;
   if(!colAt(nx,player.pos.z,.5)) player.pos.x=nx;
   if(!colAt(player.pos.x,nz,.5)) player.pos.z=nz;
   player.pos.y+=player.vel.y*dt;
   if(player.pos.y<=0){player.pos.y=0;player.vel.y=0;player.onGround=true;}
-
+ 
   if(!inVR){
     camera.position.set(player.pos.x,player.pos.y+1.68,player.pos.z);
     camera.rotation.order='YXZ';
@@ -1367,25 +1375,25 @@ function updatePlayer(dt){
     // VR: shift scene so headset origin matches player position
     scene.position.set(-player.pos.x,-player.pos.y,-player.pos.z);
   }
-
+ 
   // LOOT & CHEST tips
   var nearL=null,nearD=2.5;
   lootItems.forEach(function(l){if(l.collected)return;var d=Math.hypot(player.pos.x-l.x,player.pos.z-l.z);if(d<nearD){nearD=d;nearL=l;}});
   var lp=document.getElementById('lootTip');
   if(nearL){lp.textContent='[E] '+LTYPES[nearL.type].label;lp.style.opacity=1;if(keys['e'])doCollectLoot(player,nearL,true);}
   else lp.style.opacity=0;
-
+ 
   var nearC=null,nearCD=2.5;
   chests.forEach(function(c){if(c.opened)return;var d=Math.hypot(player.pos.x-c.x,player.pos.z-c.z);if(d<nearCD){nearCD=d;nearC=c;}});
   var cp=document.getElementById('chestTip');
   if(nearC){cp.textContent='[E] Open Chest';cp.style.opacity=1;if(keys['e'])doOpenChest(nearC);}
   else cp.style.opacity=0;
-
+ 
   // STORM
   if(Math.hypot(player.pos.x,player.pos.z)>storm.r){playerDmg(storm.dmg*60*dt);document.getElementById('stormWarn').style.opacity=1;}
   else document.getElementById('stormWarn').style.opacity=0;
 }
-
+ 
 function doReload(){
   player.reloading=true; player.reloadStart=performance.now();
   var bar=document.getElementById('reloadBar');
@@ -1422,7 +1430,7 @@ function doOpenChest(c){
   }
   toast('Chest opened!');
 }
-
+ 
 function updateBots(dt){
   var now=performance.now();
   bots.forEach(function(bot){
@@ -1510,7 +1518,7 @@ function endGame(won){
   document.getElementById('rTime').textContent=survived+'s';
   showScreen('result');
 }
-
+ 
 // ── MINIMAP ──
 var mmC=document.getElementById('mmCanvas'),mmX=mmC.getContext('2d'),MMS=88,SC=88/WORLD;
 function renderMinimap(){
@@ -1520,7 +1528,7 @@ function renderMinimap(){
   chests.forEach(function(c){if(c.opened)return;mmX.beginPath();mmX.arc(MMS/2+c.x*SC,MMS/2+c.z*SC,2.5,0,Math.PI*2);mmX.fillStyle='#f5c518';mmX.fill();});
   if(player.alive){mmX.beginPath();mmX.arc(MMS/2+player.pos.x*SC,MMS/2+player.pos.z*SC,3,0,Math.PI*2);mmX.fillStyle='#00e5ff';mmX.fill();}
 }
-
+ 
 // ── HUD ──
 function updateHUD(){
   if(!player.weapon)return;
@@ -1535,7 +1543,7 @@ function updateHUD(){
   document.getElementById('aliveN').textContent=bots.filter(function(b){return b.alive;}).length+1;
   document.getElementById('stormN').textContent=Math.round(storm.r)+'m';
 }
-
+ 
 // ── VR ──
 var inVR=false, vrCtrl0=null, vrCtrl1=null, vrGun=null, vrGrip0=false, vrGrip1=false, vrTurnCd=0;
 function initVR(){
@@ -1565,7 +1573,7 @@ function updateVRInput(){
   var session=renderer.xr.getSession(); if(!session)return;
   var dt=1/72; vrTurnCd-=dt;
   var xrCam=renderer.xr.getCamera(camera);
-
+ 
   session.inputSources.forEach(function(src){
     if(!src.gamepad)return;
     var gp=src.gamepad;
@@ -1574,7 +1582,7 @@ function updateVRInput(){
     var sx=gp.axes.length>2?gp.axes[2]:(gp.axes[0]||0);
     var sy=gp.axes.length>3?gp.axes[3]:(gp.axes[1]||0);
     var dz=0.18;
-
+ 
     // LEFT STICK = MOVE (relative to headset facing direction)
     if(left&&player.alive){
       if(Math.abs(sx)>dz||Math.abs(sy)>dz){
@@ -1596,7 +1604,7 @@ function updateVRInput(){
       }
       if(!lg)vrGrip0=false;
     }
-
+ 
     // RIGHT STICK = SNAP TURN + TRIGGER = SHOOT FROM GUN DIRECTION
     if(right&&player.alive){
       if(Math.abs(sx)>0.65&&vrTurnCd<=0){
@@ -1605,7 +1613,7 @@ function updateVRInput(){
         if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.15,40);
       }
       if(gliderActive&&sy<-0.7&&!gliderDeployed){gliderDeployed=true;player.vel.y=-4;}
-
+ 
       // RIGHT TRIGGER = SHOOT — ray from controller world direction (aim with hand)
       var trigVal=gp.buttons[0]?gp.buttons[0].value:0;
       var now=performance.now();
@@ -1625,7 +1633,7 @@ function updateVRInput(){
           if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.2,200);
         }
       }
-
+ 
       // RIGHT GRIP = cycle weapon
       var rg=gp.buttons[4]?gp.buttons[4].pressed:false;
       if(rg&&!vrGrip1){
@@ -1638,7 +1646,7 @@ function updateVRInput(){
         if(gp.hapticActuators&&gp.hapticActuators[0])gp.hapticActuators[0].pulse(.3,80);
       }
       if(!rg)vrGrip1=false;
-
+ 
       // A button = jump (Quest: button index 3)
       var aBtn=gp.buttons[3]?gp.buttons[3].pressed:false;
       if(aBtn&&player.onGround){
@@ -1647,17 +1655,17 @@ function updateVRInput(){
       }
     }
   });
-
+ 
   // Move scene so XR headset origin = player position (no spinning!)
   scene.position.set(-player.pos.x,-player.pos.y,-player.pos.z);
 }
-
+ 
 // ══════════════════════════════════════════════════
 //  XBOX CONTROLLER SUPPORT (Gamepad API)
 //  Works with: Xbox One, Series X/S, any XInput pad
 //  Connect via USB or Bluetooth before loading page
 // ══════════════════════════════════════════════════
-
+ 
 var xboxState = {
   connected: false,
   padIndex: -1,
@@ -1678,7 +1686,7 @@ var xboxState = {
   snapCd: 0,
   shootCd: 0,
 };
-
+ 
 // Xbox button indices (standard mapping)
 var XBOX = {
   A:0, B:1, X:2, Y:3,
@@ -1692,31 +1700,31 @@ var XBOX = {
   LS_X:0, LS_Y:1,    // Left stick
   RS_X:2, RS_Y:3,    // Right stick
 };
-
+ 
 // Dead zone for sticks
 var DEAD_ZONE = 0.18;
-
+ 
 function applyDeadZone(val) {
   return Math.abs(val) < DEAD_ZONE ? 0 : val;
 }
-
+ 
 function xboxBtnPressed(gp, idx) {
   var btn = gp.buttons[idx];
   if (!btn) return false;
   return btn.pressed || btn.value > 0.5;
 }
-
+ 
 function xboxBtnJustPressed(gp, idx) {
   return xboxBtnPressed(gp, idx) && !xboxState.prevButtons[idx];
 }
-
+ 
 function xboxTriggerVal(gp, idx) {
   // Triggers can be buttons[6/7] or axes[2/5] depending on browser/OS
   var btn = gp.buttons[idx];
   if (btn) return btn.value;
   return 0;
 }
-
+ 
 // Connect/disconnect events
 window.addEventListener('gamepadconnected', function(e) {
   var gp = e.gamepad;
@@ -1736,7 +1744,7 @@ window.addEventListener('gamepadconnected', function(e) {
     document.getElementById('xboxHUD').style.display = 'block';
   }
 });
-
+ 
 window.addEventListener('gamepaddisconnected', function(e) {
   if (e.gamepad.index === xboxState.padIndex) {
     xboxState.connected = false;
@@ -1745,14 +1753,14 @@ window.addEventListener('gamepaddisconnected', function(e) {
     showXboxConnected('🎮 Controller Disconnected');
   }
 });
-
+ 
 function showXboxConnected(msg) {
   var el = document.getElementById('xboxConnected');
   el.textContent = msg;
   el.style.opacity = '1';
   setTimeout(function(){ el.style.opacity='0'; }, 3000);
 }
-
+ 
 // Poll gamepads every frame (required — Gamepad API is poll-based)
 function pollXboxController(dt) {
   if (!xboxState.connected) {
@@ -1769,7 +1777,7 @@ function pollXboxController(dt) {
     }
     return;
   }
-
+ 
   var pads = navigator.getGamepads ? navigator.getGamepads() : [];
   var gp = pads[xboxState.padIndex];
   if (!gp || !gp.connected) {
@@ -1777,7 +1785,7 @@ function pollXboxController(dt) {
     document.getElementById('xboxHUD').style.display = 'none';
     return;
   }
-
+ 
   // ── LOBBY / MENU CONTROLS ──
   if (currentScreen !== 'game') {
     handleXboxMenu(gp, dt);
@@ -1785,13 +1793,13 @@ function pollXboxController(dt) {
     xboxState.prevButtons = gp.buttons.map(function(b){ return b.pressed||b.value>0.5; });
     return;
   }
-
+ 
   // ── IN-GAME CONTROLS ──
   if (!gameRunning) return;
   handleXboxGame(gp, dt);
   xboxState.prevButtons = gp.buttons.map(function(b){ return b.pressed||b.value>0.5; });
 }
-
+ 
 // ── MENU NAVIGATION ──
 function handleXboxMenu(gp, dt) {
   // A button = confirm/click
@@ -1831,7 +1839,7 @@ function handleXboxMenu(gp, dt) {
     if (pb) pb.click();
   }
 }
-
+ 
 // ── IN-GAME CONTROLS ──
 // Xbox layout:
 //   Left stick  = Move (WASD equivalent)
@@ -1850,32 +1858,35 @@ function handleXboxMenu(gp, dt) {
 //   START       = Pause / back to lobby
 //   RS (click)  = Sprint toggle
 //   LS (click)  = Toggle map
-
-var xboxAiming = false;  // LT = aiming
+ 
+var xboxAiming = false;
 var xboxSprinting = false;
 var xboxShootHeld = false;
 var xboxLastShot = 0;
-
+var xboxVelX = 0, xboxVelZ = 0; // set by Xbox handler, read by physics loop
+ 
 function handleXboxGame(gp, dt) {
   var now = performance.now();
-
+ 
   // ── LEFT STICK: MOVEMENT ──
   var lx = applyDeadZone(gp.axes[XBOX.LS_X]);
   var ly = applyDeadZone(gp.axes[XBOX.LS_Y]);
-
+ 
   if (lx !== 0 || ly !== 0) {
     var fwX = -Math.sin(player.yaw), fwZ = -Math.cos(player.yaw);
     var rtX =  Math.cos(player.yaw), rtZ = -Math.sin(player.yaw);
     var spd = xboxSprinting ? 7.0 : 4.5;
-    player.vel.x = (-ly*fwX + lx*rtX) * spd;
-    player.vel.z = (-ly*fwZ + lx*rtZ) * spd;
+    // Write to xboxVelX/Z — physics loop reads these and applies them
+    xboxVelX = (-ly*fwX + lx*rtX) * spd;
+    xboxVelZ = (-ly*fwZ + lx*rtZ) * spd;
     document.getElementById('sprintHUD').style.opacity = xboxSprinting ? 1 : 0;
   } else {
-    player.vel.x *= 0.8;
-    player.vel.z *= 0.8;
+    // Stick released — clear xbox vel so keyboard can take over
+    xboxVelX = 0;
+    xboxVelZ = 0;
     document.getElementById('sprintHUD').style.opacity = 0;
   }
-
+ 
   // ── RIGHT STICK: LOOK (moves camera / turns character) ──
   var rx = applyDeadZone(gp.axes[XBOX.RS_X]);
   var ry = applyDeadZone(gp.axes[XBOX.RS_Y]);
@@ -1888,15 +1899,15 @@ function handleXboxGame(gp, dt) {
     camera.rotation.y = player.yaw;
     camera.rotation.x = player.pitch;
   }
-
+ 
   // ── TRIGGERS ──
   var lt = xboxTriggerVal(gp, XBOX.LT);
   var rt_val = xboxTriggerVal(gp, XBOX.RT);
-
+ 
   // LT = Aim (tighten spread)
   xboxAiming = lt > 0.5;
   var spreadMult = xboxAiming ? 0.45 : 1.0; // ADS tightens spread
-
+ 
   // RT = Shoot
   if (rt_val > 0.5 && !player.reloading && player.alive && !gliderActive) {
     if (now - xboxLastShot > player.weapon.rate) {
@@ -1916,27 +1927,27 @@ function handleXboxGame(gp, dt) {
       }
     }
   }
-
+ 
   // ── FACE BUTTONS ──
-
+ 
   // A = Jump
   if (xboxBtnJustPressed(gp, XBOX.A) && player.onGround && !gliderActive) {
     player.vel.y = 8;
     player.onGround = false;
   }
-
+ 
   // A during glide = deploy glider early
   if (xboxBtnJustPressed(gp, XBOX.A) && gliderActive && !gliderDeployed) {
     gliderDeployed = true;
     player.vel.y = -4;
   }
-
+ 
   // X = Reload
   if (xboxBtnJustPressed(gp, XBOX.X) && !player.reloading && player.weapon.ammo < player.weapon.max) {
     doReload();
     xboxRumble(gp, 0.1, 0.1, 200);
   }
-
+ 
   // Y = Quick swap to AR / last weapon
   if (xboxBtnJustPressed(gp, XBOX.Y)) {
     var wkeys = ['pistol','ar','smg','sniper','shotgun'];
@@ -1949,7 +1960,7 @@ function handleXboxGame(gp, dt) {
     setFPSGun(wkeys[next]);
     updateHUD();
   }
-
+ 
   // RB = Next weapon
   if (xboxBtnJustPressed(gp, XBOX.RB)) {
     var wk = ['pistol','ar','smg','sniper','shotgun'];
@@ -1957,7 +1968,7 @@ function handleXboxGame(gp, dt) {
     player.weapon = Object.assign({},WEAPONS[wk[nxt]],{key:wk[nxt]});
     setFPSGun(wk[nxt]); updateHUD();
   }
-
+ 
   // LB = Previous weapon
   if (xboxBtnJustPressed(gp, XBOX.LB)) {
     var wk2 = ['pistol','ar','smg','sniper','shotgun'];
@@ -1965,18 +1976,18 @@ function handleXboxGame(gp, dt) {
     player.weapon = Object.assign({},WEAPONS[wk2[prev]],{key:wk2[prev]});
     setFPSGun(wk2[prev]); updateHUD();
   }
-
+ 
   // RS click = Sprint toggle
   if (xboxBtnJustPressed(gp, XBOX.RS)) {
     xboxSprinting = !xboxSprinting;
   }
-
+ 
   // D-pad Up = Use medkit/shield if nearby loot
   if (xboxBtnJustPressed(gp, XBOX.DPAD_UP)) {
     keys['e'] = true;
     setTimeout(function(){ keys['e']=false; }, 100);
   }
-
+ 
   // START = Back to lobby
   if (xboxBtnJustPressed(gp, XBOX.START)) {
     if (gameRunning) {
@@ -1985,13 +1996,13 @@ function handleXboxGame(gp, dt) {
       showScreen('lobby');
     }
   }
-
+ 
   // B = Open chest / interact (same as E)
   if (xboxBtnJustPressed(gp, XBOX.B)) {
     keys['e'] = true;
     setTimeout(function(){ keys['e']=false; }, 100);
   }
-
+ 
   // ── GLIDER PHASE: left stick steers ──
   if (gliderActive) {
     var fw2 = new THREE.Vector3(-Math.sin(player.yaw),0,-Math.cos(player.yaw));
@@ -2000,7 +2011,7 @@ function handleXboxGame(gp, dt) {
     if (lx !== 0) player.pos.addScaledVector(rt2,  lx*4*dt);
   }
 }
-
+ 
 // ── CONTROLLER VIBRATION (rumble) ──
 function xboxRumble(gp, weakMag, strongMag, durationMs) {
   if (!gp || !gp.vibrationActuator) return;
@@ -2015,11 +2026,11 @@ function xboxRumble(gp, weakMag, strongMag, durationMs) {
     }
   } catch(e) {}
 }
-
+ 
 // Rumble helpers — called directly from playerDmg/killBot
 function xboxRumbleOnDmg(){ if(!xboxState.connected)return; var pads=navigator.getGamepads?navigator.getGamepads():[]; var gp=pads[xboxState.padIndex]; if(gp)xboxRumble(gp,.6,.8,200); }
 function xboxRumbleOnKill(){ if(!xboxState.connected)return; var pads=navigator.getGamepads?navigator.getGamepads():[]; var gp=pads[xboxState.padIndex]; if(gp)xboxRumble(gp,.2,.5,120); }
-
+ 
 // ── SHOW XBOX BUTTON HINTS IN HUD ──
 function buildXboxHints() {
   var existing = document.getElementById('xboxHints');
@@ -2042,9 +2053,9 @@ function buildXboxHints() {
   });
 }
 buildXboxHints();
-
+ 
 // pollXboxController is called directly inside gameLoop below
-
+ 
 // Also poll in lobby (not in game loop)
 setInterval(function(){
   if (currentScreen !== 'game') {
@@ -2057,7 +2068,7 @@ setInterval(function(){
     }
   }
 }, 16);
-
+ 
 // ── SHOW CONTROLLER STATUS ON PAGE LOAD ──
 (function checkInitialGamepads(){
   // Some browsers need a user gesture before reporting gamepads.
@@ -2079,7 +2090,7 @@ setInterval(function(){
   document.addEventListener('keydown', checkPads, {once:false});
   setTimeout(checkPads, 1000);
 })();
-
+ 
 </script>
 </body>
 </html>
